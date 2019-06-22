@@ -15,11 +15,11 @@ gulp.task(
   gulp.series(function() {
     return gulp
       .src(paths.css)
-      .pipe(concat('style.css'))
+      .pipe(concat('style.scss'))
       .pipe(sass().on('error', sass.logError))
       .pipe(minifyCss())
       .pipe(gulp.dest('dist'))
-      .pipe(reload({ stream: true }));
+      .pipe(browserSync.stream());
   })
 );
 
