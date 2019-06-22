@@ -12,7 +12,7 @@ async function mapInit() {
   //   const mapState = getMapState(response);
   //   return createMap(mapState);
   return createMap({
-    center: [55.751574, 37.573856],
+    center: [55.754526720439664, 37.62277949243164],
     zoom: 13
   });
 }
