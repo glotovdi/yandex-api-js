@@ -1,11 +1,10 @@
-
 function closePopUp(popup) {
-    popup.style.display = 'none';
-    popup.innerHTML = '';
-  }
-  
-  function render() {
-    return `<header class="header">
+  popup.style.display = 'none';
+  popup.innerHTML = '';
+}
+
+function render() {
+  return `<header class="header">
     <div class="header__address">
       <img src="./images/address.png" alt="" class="header__address-image" />
       <div class="header__address-text"></div>
@@ -24,11 +23,9 @@ function closePopUp(popup) {
   <footer class="footer">
     <button class="footer__add">Добавить</button>
   </footer>`;
-  }
-  function getMapState(response) {
-    const mapContainer = document.querySelector('#map');
-    const bounds = response.geoObjects.get(0).properties.get('boundedBy');
-  
-    return ymaps.util.bounds.getCenterAndZoom(bounds, [mapContainer.clientWidth, mapContainer.clientHeight]);
-  }
-  
+}
+function getMapState(response) {
+  const bounds = response.geoObjects.get(0).properties.get('boundedBy');
+
+  return ymaps.util.bounds.getCenterAndZoom(bounds, [mapContainer.clientWidth, mapContainer.clientHeight]);
+}

@@ -1,22 +1,18 @@
 ymaps.ready(mapInit);
-
+var historyMarks = localStorage.getItem('placemarks') ? JSON.parse(localStorage.getItem('placemarks')) : [];
+console.log(historyMarks);
 async function mapInit() {
-  // response = await ymaps.geolocation.get();
-  // // if (!response) {
-  // //   return createMap({
-  // //     center: [55.751574, 37.573856]
-  // //   });
-  // // }
+  response = await ymaps.geolocation.get({ timeout: 5000 });
+  if (!response) {
+    return createMap({
+      center: [55.751574, 37.573856]
+    });
+  }
 
-  // // const mapState = getMapState(response);
-  // // return createMap(mapState);
-  return createMap({
-    center: [55.751315197185384, 37.62054749044975]
-  });
+  const mapState = getMapState(response);
+  return createMap(mapState);
 }
 function openPopup(obj, myMap, position, clusterer, hintContent) {
-  var popup = document.querySelector('.popup');
-
   popup.style.display = 'block';
   popup.innerHTML = render();
   popup.style.top = position[1] + 'px';
