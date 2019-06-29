@@ -1,92 +1,98 @@
 ymaps.ready(mapInit);
 
 async function mapInit() {
-  //   response = await ymaps.geolocation.get();
-  //   if (!response) {
-  //     return createMap({
-  //       center: [55.751574, 37.573856],
-  //       zoom: 2
-  //     });
-  //   }
+  // response = await ymaps.geolocation.get();
+  // // if (!response) {
+  // //   return createMap({
+  // //     center: [55.751574, 37.573856]
+  // //   });
+  // // }
 
-  //   const mapState = getMapState(response);
-  //   return createMap(mapState);
+  // // const mapState = getMapState(response);
+  // // return createMap(mapState);
   return createMap({
-    center: [55.754526720439664, 37.62277949243164],
-    zoom: 13
+    center: [55.751315197185384, 37.62054749044975]
   });
 }
+function openPopup(obj, myMap, position, clusterer, hintContent) {
+  var popup = document.querySelector('.popup');
 
-function getMapState(response) {
-  const mapContainer = document.querySelector('#map');
-  const bounds = response.geoObjects.get(0).properties.get('boundedBy');
+  popup.style.display = 'block';
+  popup.innerHTML = render();
+  popup.style.top = position[1] + 'px';
+  popup.style.left = position[0] + 'px';
 
-  return ymaps.util.bounds.getCenterAndZoom(bounds, [mapContainer.clientWidth, mapContainer.clientHeight]);
+  addFeedback(obj, myMap, position, clusterer, popup, hintContent);
+
+  closeAddEventListeres(popup);
 }
 
-function createMap(state) {
-  const map = new ymaps.Map('map', state);
-  document.body.removeChild(document.querySelector('#loader'));
-  var clusterer = initCluster();
-  addEventClick(map, clusterer);
-}
+function addFeedback(obj, myMap, position, clusterer, popup, hintContent) {
+  var inputName = document.querySelector('.form__name');
+  var inputPlace = document.querySelector('.form__place');
+  var inputText = document.querySelector('.form__text');
+  var addButton = document.querySelectorAll('.footer__add')[document.querySelectorAll('.footer__add').length - 1];
 
-function initCluster(customItemContentLayout) {
-  var customItemContentLayout = ymaps.templateLayoutFactory.createClass(
-    '<h2 class=ballon_header>{{ properties.balloonContentHeader|raw }}</h2>' +
-      '<div class=ballon_body>{{ properties.balloonContentBody|raw }}</div>' +
-      '<div class=ballon_footer>{{ properties.balloonContentFooter|raw }}</div>'
-  );
-  return new ymaps.Clusterer({
-    clusterDisableClickZoom: true,
-    clusterOpenBalloonOnClick: true,
-    // Устанавливаем стандартный макет балуна кластера "Карусель".
-    clusterBalloonContentLayout: 'cluster#balloonCarousel',
-    // Устанавливаем собственный макет.
-    clusterBalloonItemContentLayout: customItemContentLayout,
-    // Устанавливаем режим открытия балуна.
-    // В данном примере балун никогда не будет открываться в режиме панели.
-    clusterBalloonPanelMaxMapArea: 0,
-    // Устанавливаем размеры макета контента балуна (в пикселях).
-    clusterBalloonContentLayoutWidth: 200,
-    clusterBalloonContentLayoutHeight: 130,
-    // Устанавливаем максимальное количество элементов в нижней панели на одной странице
-    clusterBalloonPagerSize: 5,
-    clusterDisableClickZoom: true
-  });
-}
+  var headerAddress = document.querySelector('.header__address-text');
 
-function addEventClick(myMap, clusterer) {
-  myMap.events.add('click', function(e) {
-    var prevEl = document.body.querySelector('.popup');
+  headerAddress.innerHTML = obj.address;
 
-    if (prevEl) {
-      document.body.removeChild(prevEl);
+  var feedbacks = document.querySelector('.feedbacks');
+  var feedback = document.createElement('li');
+
+  feedback.classList.add('feedback');
+  feedback.innerHTML = hintContent;
+  feedbacks.appendChild(feedback);
+
+  addButton.addEventListener('click', () => {
+    if (inputName.value && inputPlace.value && inputText.value) {
+      var feedback = document.createElement('li');
+
+      var name = document.createElement('div');
+      var place = document.createElement('div');
+      var text = document.createElement('div');
+      var day = document.createElement('div');
+      var firstLine = document.createElement('div');
+
+      name.innerHTML = inputName.value;
+      place.innerHTML = inputPlace.value;
+      text.innerHTML = inputText.value;
+
+      const parsedText = {
+        place: inputPlace.value,
+        feedback: inputText.value
+      };
+
+      var date = new Date();
+
+      day.innerHTML = date.getDate() + '.' + date.getMonth() + '.' + date.getFullYear();
+
+      feedback.classList.add('feedback');
+      name.classList.add('feedback__name');
+      place.classList.add('feedback__place');
+      text.classList.add('feedback__text');
+      firstLine.classList.add('feedback__firstLine');
+
+      [name, place, day].forEach(element => firstLine.appendChild(element));
+
+      feedback.appendChild(firstLine);
+      feedback.appendChild(text);
+      [firstLine, text].forEach(element => feedback.appendChild(element));
+      feedbacks.appendChild(feedback);
+      [(inputPlace, inputName, inputText)].forEach(element => (element.value = ''));
+
+      placemarks(obj, myMap, position, clusterer, popup, parsedText);
+      closePopUp(popup);
+    } else {
+      alert('Заполните все поля!');
     }
-
-    var coords = e.get('coords');
-
-    var coordsForPopUp = e._cache.pagePixels;
-
-    renderPopUp(coordsForPopUp);
-
-    var myPlacemark = new ymaps.Placemark(coords, {
-      balloonContentHeader: 'test',
-      balloonContentBody: 'test',
-      balloonContentFooter: 'test'
-    });
-
-    clusterer.add(myPlacemark);
-    myMap.geoObjects.add(clusterer);
   });
 }
 
-function renderPopUp(coords) {
-  var el = document.createElement('div');
-  el.innerText = 'Тестовый поп-ап';
-  el.style.position = 'fixed';
-  el.style.top = `${coords[1]}px`;
-  el.style.left = `${coords[0]}px`;
-  el.classList.add('popup');
-  document.body.append(el);
+function closeAddEventListeres(popup) {
+  var closeButton = document.querySelector('.header__close');
+
+  closeButton.addEventListener('click', () => {
+    closePopUp(popup);
+  });
 }

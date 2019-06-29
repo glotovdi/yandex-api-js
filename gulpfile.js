@@ -7,7 +7,8 @@ var concat = require('gulp-concat');
 var paths = {
   html: ['src/index.html'],
   css: ['src/styles/*.scss'],
-  script: ['src/scripts/*.js']
+  script: ['src/scripts/*.js'],
+  images: ['src/images/*']
 };
 
 gulp.task(
@@ -52,7 +53,18 @@ gulp.task(
   gulp.series(function() {
     return gulp
       .src(paths.script)
+      .pipe(concat('index.js'))
       .pipe(gulp.dest('dist'))
+      .pipe(reload({ stream: true }));
+  })
+);
+
+gulp.task(
+  'images',
+  gulp.series(function() {
+    return gulp
+      .src(paths.images)
+      .pipe(gulp.dest('dist/images'))
       .pipe(reload({ stream: true }));
   })
 );
@@ -63,9 +75,10 @@ gulp.task(
     gulp.watch(paths.css, gulp.series(['mincss']));
     gulp.watch(paths.script, gulp.series(['scripts']));
     gulp.watch(paths.html, gulp.series(['html']));
+    gulp.watch(paths.images, gulp.series(['images']));
   })
 );
 
-gulp.task('prepare', gulp.parallel('mincss', 'scripts', 'html'));
+gulp.task('prepare', gulp.parallel('mincss', 'scripts', 'html', 'images'));
 
 gulp.task('default', gulp.parallel('prepare', 'watcher', 'browserSync'));
