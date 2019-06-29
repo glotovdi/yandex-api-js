@@ -7,7 +7,7 @@ var concat = require('gulp-concat');
 var paths = {
   html: ['src/index.html'],
   css: ['src/styles/*.scss'],
-  script: ['src/scripts/variables/*.js', 'src/scripts/*.js'],
+  script: ['src/scripts/*.js'],
   images: ['src/images/*']
 };
 
@@ -82,3 +82,14 @@ gulp.task(
 gulp.task('prepare', gulp.parallel('mincss', 'scripts', 'html', 'images'));
 
 gulp.task('default', gulp.parallel('prepare', 'watcher', 'browserSync'));
+
+gulp.task(
+  'move',
+  gulp.series(function() {
+    return gulp
+      .src('dist/**/*')
+      .pipe(gulp.dest('../projects/yandex-api-js'))
+      .pipe(reload({ stream: true }));
+  })
+);
+gulp.task('build', gulp.series(['prepare', 'move']));
