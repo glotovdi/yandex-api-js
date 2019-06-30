@@ -77,7 +77,6 @@ function addFeedback(obj, position, popup, hintContent) {
       [(inputPlace, inputName, inputText)].forEach(element => (element.value = ''));
 
       placemarks(obj, position, popup, parsedText);
-      closePopUp(popup);
     } else {
       alert('Заполните все поля!');
     }
