@@ -1,6 +1,5 @@
 ymaps.ready(mapInit);
 var historyMarks = localStorage.getItem('placemarks') ? JSON.parse(localStorage.getItem('placemarks')) : [];
-console.log(historyMarks);
 async function mapInit() {
   response = await ymaps.geolocation.get({ timeout: 5000 });
   if (!response) {
@@ -12,18 +11,18 @@ async function mapInit() {
   const mapState = getMapState(response);
   return createMap(mapState);
 }
-function openPopup(obj, myMap, position, clusterer, hintContent) {
+function openPopup(obj, position, hintContent) {
   popup.style.display = 'block';
   popup.innerHTML = render();
   popup.style.top = position[1] + 'px';
   popup.style.left = position[0] + 'px';
 
-  addFeedback(obj, myMap, position, clusterer, popup, hintContent);
+  addFeedback(obj, position, popup, hintContent);
 
   closeAddEventListeres(popup);
 }
 
-function addFeedback(obj, myMap, position, clusterer, popup, hintContent) {
+function addFeedback(obj, position, popup, hintContent) {
   var inputName = document.querySelector('.form__name');
   var inputPlace = document.querySelector('.form__place');
   var inputText = document.querySelector('.form__text');
@@ -77,7 +76,7 @@ function addFeedback(obj, myMap, position, clusterer, popup, hintContent) {
       feedbacks.appendChild(feedback);
       [(inputPlace, inputName, inputText)].forEach(element => (element.value = ''));
 
-      placemarks(obj, myMap, position, clusterer, popup, parsedText);
+      placemarks(obj, position, popup, parsedText);
       closePopUp(popup);
     } else {
       alert('Заполните все поля!');
@@ -92,3 +91,16 @@ function closeAddEventListeres(popup) {
     closePopUp(popup);
   });
 }
+
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('linckCoords')) {
+    el = e.target;
+    const obj = {};
+    obj.coords = e.target.dataset.obj.split(',');
+    obj.coords = obj.coords.map(c => +c);
+    obj.address = e.target.dataset.address;
+    const position = [e.clientX, e.clientY];
+    const placemark = historyMarks.find(mark => mark.coords[0] === obj.coords[0] && mark.coords[1] === obj.coords[1]);
+    openPopup(obj, position, placemark.baloonOptions.hintContent);
+  }
+});
