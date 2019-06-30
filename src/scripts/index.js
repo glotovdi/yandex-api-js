@@ -103,7 +103,8 @@ document.addEventListener('click', function(e) {
     const placemark = historyMarks.filter(mark => mark.coords[0] === obj.coords[0] && mark.coords[1] === obj.coords[1]);
 
     const comments = placemark.reduce((acc, placemark) => (acc += placemark.baloonOptions.hintContent), []);
-    
+
     openPopup(obj, position, comments);
+    myMap.balloon.close();
   }
 });
