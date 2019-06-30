@@ -34,6 +34,7 @@ function createMap(mapState) {
         var obj = {};
         obj.coords = coords;
         obj.address = geoCoords.geoObjects.get(0).properties.get('text');
+
         openPopup(obj, position, placemark.properties._data.hintContent);
       });
       return placemark;
@@ -55,14 +56,18 @@ async function addEvent(e) {
   obj.coords = coords;
   obj.address = geoCoords.geoObjects.get(0).properties.get('text');
   obj.comments = [];
+
+  openPopup(obj, position, '');
+}
+
+function calcPosition(position) {
   if (position[0] > window.screen.availWidth - 367) {
     position[0] = window.screen.availWidth - 400;
   }
   if (position[1] > window.screen.availHeight - 675) {
     position[1] = window.screen.availHeight - 675;
   }
-
-  openPopup(obj, position, '');
+  return position;
 }
 
 function placemarks(obj, position, popup, text) {

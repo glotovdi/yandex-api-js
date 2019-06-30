@@ -12,6 +12,7 @@ async function mapInit() {
   return createMap(mapState);
 }
 function openPopup(obj, position, hintContent) {
+  position = calcPosition(position);
   popup.style.display = 'block';
   popup.innerHTML = render();
   popup.style.top = position[1] + 'px';
@@ -99,7 +100,10 @@ document.addEventListener('click', function(e) {
     obj.coords = obj.coords.map(c => +c);
     obj.address = e.target.dataset.address;
     const position = [e.clientX, e.clientY];
-    const placemark = historyMarks.find(mark => mark.coords[0] === obj.coords[0] && mark.coords[1] === obj.coords[1]);
-    openPopup(obj, position, placemark.baloonOptions.hintContent);
+    const placemark = historyMarks.filter(mark => mark.coords[0] === obj.coords[0] && mark.coords[1] === obj.coords[1]);
+
+    const comments = placemark.reduce((acc, placemark) => (acc += placemark.baloonOptions.hintContent), []);
+    
+    openPopup(obj, position, comments);
   }
 });
